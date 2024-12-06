@@ -1,0 +1,95 @@
+import java.util.*;
+import java.text.SimpleDateFormat;
+public class Transaction {
+    private String type; // "Income" or "Expense"
+    private String category;
+    private double amount;
+    private Date date;
+    private String description;
+    public Transaction(String type, String category, double amount, Date date, String description) {
+        this.type = type;
+        this.category = category;
+        this.amount = amount;
+        this.date = date;
+        this.description = description;
+    }
+    public String getType() {
+        return type;
+    }
+    public String getCategory() {
+        return category;
+    }
+    public double getAmount() {
+        return amount;
+    }
+    public Date getDate() {
+        return date;
+    }
+    public String getDescription() {
+        return description;
+    }
+    @Override
+    public String toString() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return String.format("[%s] %s | %s: $%.2f | %s", dateFormat.format(date), type, category, amount, description);
+    }
+}
+class FinanceManager {
+    private List<Transaction> transactions = new ArrayList<>();
+    public void addTransaction(String type, String category, double amount, Date date, String description) {
+        transactions.add(new Transaction(type, category, amount, date, description));
+    }
+    public double getBalance() {
+        double balance = 0;
+        for (Transaction t : transactions) {
+            if (t.getType().equals("Income")) {
+                balance += t.getAmount();
+            } else {
+                balance -= t.getAmount();
+            }
+        }
+        return balance;
+    }
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+    public List<Transaction> filterTransactions(Date startDate, Date endDate, String type, String category) {
+        List<Transaction> filtered = new ArrayList<>();
+        for (Transaction t : transactions) {
+            if ((type == null || t.getType().equals(type)) &&
+                    (category == null || t.getCategory().equals(category)) &&
+                    (startDate == null || !t.getDate().before(startDate)) &&
+                    (endDate == null || !t.getDate().after(endDate))) {
+                filtered.add(t);
+            }
+        }
+        return filtered;
+    }
+    public void deleteTransaction(int index) {
+        if (index >= 0 && index < transactions.size()) {
+            transactions.remove(index);
+        } else {
+            System.out.println("Invalid transaction index.");
+        }
+    }
+    public void printSummary(Date startDate, Date endDate) {
+        double income = 0, expenses = 0;
+        for (Transaction t : filterTransactions(startDate, endDate, null, null)) {
+            if (t.getType().equals("Income")) {
+                income += t.getAmount();
+            } else {
+                expenses += t.getAmount();
+            }
+        }
+        System.out.printf("Income: $%.2f | Expenses: $%.2f | Net: $%.2f%n", income, expenses, income - expenses);
+    }
+    public void printSpendingByCategory(Date startDate, Date endDate) {
+        Map<String, Double> categoryTotals = new HashMap<>();
+        for (Transaction t : filterTransactions(startDate, endDate, "Expense", null)) {
+            categoryTotals.put(t.getCategory(), categoryTotals.getOrDefault(t.getCategory(), 0.0) + t.getAmount());
+        }
+        for (Map.Entry<String, Double> entry : categoryTotals.entrySet()) {
+            System.out.printf("%s: $%.2f%n", entry.getKey(), entry.getValue());
+        }
+    }
+}
