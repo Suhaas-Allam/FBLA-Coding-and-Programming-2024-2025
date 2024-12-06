@@ -22,7 +22,7 @@ instructions and parts of the program to manage your finances. We have provided 
 IntelliJ Download Link: https://www.jetbrains.com/idea/download/?section=windows (You must then scroll to the bottom
 and click DOWNLOAD for the FREE version)
 
-// How to run this using python
+// How to run this using Java
 
 1.  You must successfully install IntelliJ onto your desktop and create two java class files by right
     clicking on the src file and naming one of them as PersonalFinanceApp, and another as Transaction.
