@@ -31,5 +31,3 @@ and click DOWNLOAD for the FREE version)
 3.  Then click on the PersonalFinanceApp class and click on the green triangle (top right) and open the console window
     (bottom screen).
 4. Follow the instructions of the program to manage your finances.
-
-5. Heyyyy Skibidiiiiiiii
