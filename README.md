@@ -26,11 +26,8 @@ and click DOWNLOAD for the FREE version)
 
 1.  You must successfully install IntelliJ onto your desktop and create two java class files by right
     clicking on the src file and naming one of them as PersonalFinanceApp, and another as Transaction.
-2.  Then copy and paste each of the links (The links are below) into their own respective web browser tabs paste the code
-    from the first link into the java class named PersonalFinanceApp, and paste the second into the Transaction
-    java class.
-        1. C:\Users\13463\Documents\A7\src\PersonalFinanceApp.java - Goes into the PersonalFinanceApp class
-        2. C:\Users\13463\Documents\A7\src\Transaction.java - Goes into the Transaction class
+2.  Then copy and paste each of the files (Above) and import the files into IntelliJ or simply paste the code
+    into the file's respective Java class files.
 3.  Then click on the PersonalFinanceApp class and click on the green triangle (top right) and open the console window
     (bottom screen).
 4. Follow the instructions of the program to manage your finances.
