@@ -1,0 +1,429 @@
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+
+public class FinanceManagerGUI {
+    // Instance of the FinanceManager class that handles all transaction operations.
+    private FinanceManager manager = new FinanceManager();
+
+
+    // Main JFrame that serves as the container for all GUI components.
+    private JFrame frame;
+
+
+    // JTable to display a list of transactions.
+    private JTable table;
+
+
+    // Table model for managing transaction data within the JTable.
+    private DefaultTableModel tableModel;
+
+
+    // JLabel to display the current balance.
+    private JLabel balanceLabel;
+
+
+    // Constructor to initialize and build the GUI.
+    public FinanceManagerGUI() {
+        // Create the main window and set its title.
+        frame = new JFrame("Personal Finance Manager");
+        // Ensure the application exits when the window is closed.
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Set the size of the window.
+        frame.setSize(800, 600);
+        // Use BorderLayout for the main frame with 10px horizontal and vertical gaps.
+        frame.setLayout(new BorderLayout(10, 10));
+
+
+        // *********************** //
+        // Setup the Transactions Table
+        // *********************** //
+
+
+        // Initialize the table model with column headers.
+        tableModel = new DefaultTableModel(new Object[]{"Date", "Type", "Category", "Amount", "Description"}, 0);
+        // Create a JTable using the table model.
+        table = new JTable(tableModel);
+        // Add the table to a scroll pane to allow scrolling if the data exceeds the visible area.
+        JScrollPane scrollPane = new JScrollPane(table);
+        // Place the scroll pane in the center region of the BorderLayout.
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+
+        // *********************** //
+        // Setup the Balance Display Panel
+        // *********************** //
+
+
+        // Create a panel to display the balance at the top of the window.
+        JPanel balancePanel = new JPanel();
+        // Initialize the balance label with a default value.
+        balanceLabel = new JLabel("Balance: $0.00");
+        // Add the balance label to the panel.
+        balancePanel.add(balanceLabel);
+        // Add the balance panel to the north (top) region of the BorderLayout.
+        frame.add(balancePanel, BorderLayout.NORTH);
+
+
+        // *********************** //
+        // Setup the Buttons Panel
+        // *********************** //
+
+
+        // Create a panel to hold various action buttons.
+        JPanel panel = new JPanel();
+        // Set the layout for buttons to FlowLayout.
+        panel.setLayout(new FlowLayout());
+
+
+        // Create buttons for different actions.
+        JButton addButton = new JButton("Add Transaction");
+        JButton updateButton = new JButton("Update Transaction");
+        JButton deleteButton = new JButton("Delete Transaction");
+        JButton summaryButton = new JButton("View Summary");
+        JButton filterButton = new JButton("Filter Transactions");
+        JButton categoryButton = new JButton("View Spending by Category");
+        JButton qandAButton = new JButton("Interactive Q&A");
+
+
+        // Add the buttons to the panel.
+        panel.add(addButton);
+        panel.add(updateButton);
+        panel.add(deleteButton);
+        panel.add(summaryButton);
+        panel.add(filterButton);
+        panel.add(categoryButton);
+        panel.add(qandAButton);
+
+
+        // Place the button panel in the south (bottom) region of the BorderLayout.
+        frame.add(panel, BorderLayout.SOUTH);
+
+
+        // *********************** //
+        // Setup Button Action Listeners
+        // *********************** //
+
+
+        // When the add button is clicked, trigger the addTransaction() method.
+        addButton.addActionListener(e -> addTransaction());
+        // When the update button is clicked, trigger the updateTransaction() method.
+        updateButton.addActionListener(e -> updateTransaction());
+        // When the delete button is clicked, trigger the deleteTransaction() method.
+        deleteButton.addActionListener(e -> deleteTransaction());
+        // When the summary button is clicked, trigger the viewSummary() method.
+        summaryButton.addActionListener(e -> viewSummary());
+        // When the filter button is clicked, trigger the filterTransactions() method.
+        filterButton.addActionListener(e -> filterTransactions());
+        // When the category button is clicked, trigger the viewSpendingByCategory() method.
+        categoryButton.addActionListener(e -> viewSpendingByCategory());
+        // When the Q&A button is clicked, trigger the interactiveQandA() method.
+        qandAButton.addActionListener(e -> interactiveQandA());
+
+
+        // Finally, make the main window visible.
+        frame.setVisible(true);
+    }
+
+
+    // *********************** //
+    // Method to update the JTable with current transactions.
+    // *********************** //
+    private void updateTable() {
+        // Clear the current rows in the table model.
+        tableModel.setRowCount(0);
+        // Retrieve the list of transactions from the FinanceManager.
+        ArrayList<Transaction> transactions = (ArrayList<Transaction>) manager.getTransactions();
+        // Iterate through each transaction and add its details as a row in the table.
+        for (Transaction t : transactions) {
+            tableModel.addRow(new Object[]{
+                    // Format the date to "yyyy-MM-dd".
+                    new SimpleDateFormat("yyyy-MM-dd").format(t.getDate()),
+                    // Transaction type (e.g., Income or Expense).
+                    t.getType(),
+                    // Transaction category.
+                    t.getCategory(),
+                    // Transaction amount.
+                    t.getAmount(),
+                    // Transaction description.
+                    t.getDescription()
+            });
+        }
+        // After updating the table, refresh the balance display.
+        updateBalance();
+    }
+
+
+    // *********************** //
+    // Method to update the balance label with the current balance.
+    // *********************** //
+    private void updateBalance() {
+        // Retrieve the current balance from the FinanceManager and format it to two decimal places.
+        balanceLabel.setText("Balance: $" + String.format("%.2f", manager.getBalance()));
+    }
+
+
+    // *********************** //
+    // Method to add a new transaction.
+    // *********************** //
+    private void addTransaction() {
+        // Prompt the user for each field of the transaction.
+        String type = JOptionPane.showInputDialog(frame, "Enter type (Income/Expense):");
+        String category = JOptionPane.showInputDialog(frame, "Enter category:");
+        double amount = Double.parseDouble(JOptionPane.showInputDialog(frame, "Enter amount:"));
+        String dateString = JOptionPane.showInputDialog(frame, "Enter date (yyyy-MM-dd):");
+        String description = JOptionPane.showInputDialog(frame, "Enter description:");
+
+
+        try {
+            // Convert the entered date string into a Date object.
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+            // Add the new transaction to the manager.
+            manager.addTransaction(type, category, amount, date, description);
+            // Update the table to reflect the new transaction.
+            updateTable();
+            // Notify the user that the transaction has been added.
+            JOptionPane.showMessageDialog(frame, "Transaction added successfully.");
+        } catch (Exception e) {
+            // Inform the user if the date format is incorrect.
+            JOptionPane.showMessageDialog(frame, "Invalid date format.");
+        }
+    }
+
+
+    // *********************** //
+    // Method to update an existing transaction.
+    // *********************** //
+    private void updateTransaction() {
+        // Get the currently selected row in the JTable.
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            // Retrieve the corresponding transaction from the manager.
+            Transaction selectedTransaction = manager.getTransactions().get(row);
+
+
+            // Prompt the user for updated transaction details, pre-filling the current values.
+            String type = (String) JOptionPane.showInputDialog(frame, "Enter type (Income/Expense):", selectedTransaction.getType());
+            String category = (String) JOptionPane.showInputDialog(frame, "Enter category:", selectedTransaction.getCategory());
+            double amount = Double.parseDouble(JOptionPane.showInputDialog(frame, "Enter amount:", selectedTransaction.getAmount()));
+            String dateString = JOptionPane.showInputDialog(frame, "Enter date (yyyy-MM-dd):", new SimpleDateFormat("yyyy-MM-dd").format(selectedTransaction.getDate()));
+            String description = JOptionPane.showInputDialog(frame, "Enter description:", selectedTransaction.getDescription());
+
+
+            try {
+                // Parse the updated date string into a Date object.
+                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+                // Create a new Transaction object with the updated details.
+                Transaction updatedTransaction = new Transaction(type, category, amount, date, description);
+                // Update the transaction in the manager (adjusting index if necessary).
+                manager.updateTransaction(row + 1, updatedTransaction);
+                // Refresh the table to show the updated transaction.
+                updateTable();
+                // Notify the user that the update was successful.
+                JOptionPane.showMessageDialog(frame, "Transaction updated successfully.");
+            } catch (Exception e) {
+                // Inform the user if there is an error with the date format.
+                JOptionPane.showMessageDialog(frame, "Invalid date format.");
+            }
+        } else {
+            // Alert the user if no transaction is selected.
+            JOptionPane.showMessageDialog(frame, "Please select a transaction to update.");
+        }
+    }
+
+
+    // *********************** //
+    // Method to delete a transaction.
+    // *********************** //
+    private void deleteTransaction() {
+        // Get the selected row from the table.
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            // Ask for user confirmation before deletion.
+            int confirmation = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete this transaction?");
+            if (confirmation == JOptionPane.YES_OPTION) {
+                // Delete the transaction (note the index adjustment if needed).
+                manager.deleteTransaction(row + 1);
+                // Refresh the table to remove the deleted transaction.
+                updateTable();
+                // Inform the user that the transaction has been deleted.
+                JOptionPane.showMessageDialog(frame, "Transaction deleted successfully.");
+            }
+        } else {
+            // Notify the user if no transaction is selected.
+            JOptionPane.showMessageDialog(frame, "Please select a transaction to delete.");
+        }
+    }
+
+
+    // *********************** //
+    // Method to view a summary of all transactions.
+    // *********************** //
+    private void viewSummary() {
+        // Retrieve all transactions from the manager.
+        ArrayList<Transaction> transactions = (ArrayList<Transaction>) manager.getTransactions();
+        // Use a StringBuilder to compile the summary text.
+        StringBuilder summary = new StringBuilder("Transactions Summary:\n\n");
+
+
+        // Initialize totals for income and expenses.
+        double totalIncome = 0;
+        double totalExpenses = 0;
+
+
+        // Loop through each transaction to accumulate totals and details.
+        for (Transaction t : transactions) {
+            if (t.getType().equals("Income")) {
+                totalIncome += t.getAmount();
+            } else {
+                totalExpenses += t.getAmount();
+            }
+            // Append each transaction's details to the summary.
+            summary.append(t.toString()).append("\n");
+        }
+
+
+        // Append the overall totals and net balance to the summary.
+        summary.append("\nTotal Income: $").append(totalIncome).append("\n");
+        summary.append("Total Expenses: $").append(totalExpenses).append("\n");
+        summary.append("Net Balance: $").append(totalIncome - totalExpenses);
+
+
+        // Display the complete summary to the user.
+        JOptionPane.showMessageDialog(frame, summary.toString());
+    }
+
+
+    // *********************** //
+    // Method to filter transactions based on a date range.
+    // *********************** //
+    private void filterTransactions() {
+        // Prompt the user for the start and end dates.
+        String startDateStr = JOptionPane.showInputDialog(frame, "Enter start date (yyyy-MM-dd):");
+        String endDateStr = JOptionPane.showInputDialog(frame, "Enter end date (yyyy-MM-dd):");
+
+
+        try {
+            // Parse the provided dates.
+            Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDateStr);
+            Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDateStr);
+
+
+            // Retrieve filtered transactions from the manager; passing null for additional filters.
+            ArrayList<Transaction> filteredTransactions = (ArrayList<Transaction>) manager.filterTransactions(startDate, endDate, null, null);
+            // Build a summary string of the filtered transactions.
+            StringBuilder filteredSummary = new StringBuilder("Filtered Transactions:\n\n");
+
+
+            for (Transaction t : filteredTransactions) {
+                filteredSummary.append(t.toString()).append("\n");
+            }
+
+
+            // Display the filtered transactions.
+            JOptionPane.showMessageDialog(frame, filteredSummary.toString());
+        } catch (Exception e) {
+            // Inform the user if the date format is incorrect.
+            JOptionPane.showMessageDialog(frame, "Invalid date format.");
+        }
+    }
+
+
+    // *********************** //
+    // Method to view spending categorized by transaction category.
+    // *********************** //
+    private void viewSpendingByCategory() {
+        // Retrieve the list of transactions.
+        ArrayList<Transaction> transactions = (ArrayList<Transaction>) manager.getTransactions();
+        // Build a summary for income transactions.
+        StringBuilder incomeSummary = new StringBuilder("Income:\n");
+        // Build a summary for expenses grouped by category.
+        StringBuilder expenseSummary = new StringBuilder("\nExpenses by Category:\n");
+
+
+        // Map to accumulate total expenses for each category.
+        Map<String, Double> categoryTotals = new HashMap<>();
+
+
+        // Iterate through each transaction.
+        for (Transaction t : transactions) {
+            if (t.getType().equals("Income")) {
+                // Append income transactions to the income summary.
+                incomeSummary.append(t.toString()).append("\n");
+            } else {
+                // Sum up expenses by category.
+                categoryTotals.put(t.getCategory(), categoryTotals.getOrDefault(t.getCategory(), 0.0) + t.getAmount());
+            }
+        }
+
+
+        // Append each category and its total expense amount to the expense summary.
+        for (Map.Entry<String, Double> entry : categoryTotals.entrySet()) {
+            expenseSummary.append(entry.getKey()).append(": $").append(entry.getValue()).append("\n");
+        }
+
+
+        // Display the income and expense summaries together.
+        JOptionPane.showMessageDialog(frame, incomeSummary.toString() + expenseSummary.toString());
+    }
+
+
+    // *********************** //
+    // Method to provide an interactive Q&A session for finance-related questions.
+    // *********************** //
+    private void interactiveQandA() {
+        // Define the possible questions/options for the user.
+        String[] options = {"Balance", "Summary", "Update", "Delete", "Category", "Add Transaction", "Exit"};
+        // Present the options to the user in a drop-down dialog.
+        String response = (String) JOptionPane.showInputDialog(frame, "Ask a finance-related question:",
+                "Interactive Q&A", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+
+        // If the user selects "Exit" or cancels, inform them how to exit.
+        if (response == null || response.equals("Exit")) {
+            JOptionPane.showMessageDialog(frame, "To exit, simply close the tab.");
+            return; // Exit the Q&A session.
+        }
+
+
+        // Use a switch-case to handle the user's selection.
+        switch (response) {
+            case "Balance":
+                // Show the current balance.
+                JOptionPane.showMessageDialog(frame, "Your current balance is: $" + String.format("%.2f", manager.getBalance()));
+                break;
+            case "Summary":
+                // Instruct the user how to view the summary.
+                JOptionPane.showMessageDialog(frame, "To generate a summary, please use the 'Generate Summary' option in the menu.");
+                break;
+            case "Update Transaction":
+                // Instruct the user on how to update a transaction.
+                JOptionPane.showMessageDialog(frame, "To update a transaction, first click on a transaction and then select 'Update Transaction' from the menu.");
+                break;
+            case "Delete Transaction":
+                // Instruct the user on how to delete a transaction.
+                JOptionPane.showMessageDialog(frame, "To delete a transaction, first click on a transaction and then select 'Delete Transaction' from the menu.");
+                break;
+            case "Category":
+                // Instruct the user on how to view spending by category.
+                JOptionPane.showMessageDialog(frame, "To view spending by category, choose 'View Spending by Category'.");
+                break;
+            case "Add Transaction":
+                // Instruct the user on how to add a new transaction.
+                JOptionPane.showMessageDialog(frame, "To add a transaction, select 'Add Transaction' from the menu.");
+                break;
+        }
+    }
+
+
+    // *********************** //
+    // Main method to launch the application.
+    // *********************** //
+    public static void main(String[] args) {
+        // Ensure that GUI creation and updates are executed on the Event Dispatch Thread.
+        SwingUtilities.invokeLater(FinanceManagerGUI::new);
+    }
+}
