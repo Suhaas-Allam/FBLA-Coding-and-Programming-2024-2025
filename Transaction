@@ -1,198 +1,297 @@
-import java.util.*; // Importing utility classes like List, ArrayList, and Date
-import java.text.SimpleDateFormat; // Importing SimpleDateFormat for formatting dates
+import java.util.*; // Importing utility classes for data structures (e.g., List, ArrayList) and Date handling.
+import java.text.SimpleDateFormat; // Importing SimpleDateFormat to format Date objects into readable strings.
 
 
 /**
-* Represents a financial transaction, either an income or an expense.
-*/
+ * Represents a financial transaction, which can be either an income (money received)
+ * or an expense (money spent). Each transaction is characterized by its type, category,
+ * amount, date, and a brief description.
+ */
 public class Transaction {
 
 
-   // Instance variables to store transaction details
-   private String type; // Type of transaction: "Income" or "Expense"
-   private String category; // Category of the transaction, e.g., "Food", "Rent", etc.
-   private double amount; // Amount of the transaction
-   private Date date; // Date when the transaction occurred
-   private String description; // Description or note about the transaction
+    // -----------------------------
+    // Instance Variables
+    // -----------------------------
+    // The type of transaction: expected to be either "Income" or "Expense".
+    private String type;
 
 
-   /**
-    * Constructor to initialize a Transaction object with its attributes.
-    *
-    * @param type        The type of transaction ("Income" or "Expense").
-    * @param category    The category of the transaction.
-    * @param amount      The amount of money involved in the transaction.
-    * @param date        The date of the transaction.
-    * @param description A description of the transaction.
-    */
-   public Transaction(String type, String category, double amount, Date date, String description) {
-       this.type = type;
-       this.category = category;
-       this.amount = amount;
-       this.date = date;
-       this.description = description;
-   }
+    // The category that the transaction belongs to (e.g., "Food", "Rent").
+    private String category;
 
 
-   // Getter methods for accessing private fields
-   public String getType() {
-       return type;
-   }
+    // The amount of money involved in the transaction.
+    private double amount;
 
 
-   public String getCategory() {
-       return category;
-   }
+    // The date when the transaction occurred.
+    private Date date;
 
 
-   public double getAmount() {
-       return amount;
-   }
+    // A brief description or note providing additional details about the transaction.
+    private String description;
 
 
-   public Date getDate() {
-       return date;
-   }
+    /**
+     * Constructor to initialize a Transaction object with all the required details.
+     *
+     * @param type        The type of transaction ("Income" or "Expense").
+     * @param category    The category under which the transaction falls.
+     * @param amount      The monetary amount involved in the transaction.
+     * @param date        The date on which the transaction occurred.
+     * @param description A brief description or note regarding the transaction.
+     */
+    public Transaction(String type, String category, double amount, Date date, String description) {
+        // Assign each parameter to its corresponding instance variable.
+        this.type = type;
+        this.category = category;
+        this.amount = amount;
+        this.date = date;
+        this.description = description;
+    }
 
 
-   public String getDescription() {
-       return description;
-   }
+    // -----------------------------
+    // Getter Methods
+    // -----------------------------
+    // These methods provide read-only access to the private instance variables.
 
 
-   /**
-    * Returns a string representation of the transaction.
-    *
-    * @return A formatted string with transaction details.
-    */
-   @Override
-   public String toString() {
-       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-       return String.format("[%s] %s | %s: $%.2f | %s", dateFormat.format(date), type, category, amount, description);
-   }
+    /**
+     * Retrieves the type of this transaction.
+     *
+     * @return a String representing the transaction type.
+     */
+    public String getType() {
+        return type;
+    }
+
+
+    /**
+     * Retrieves the category of this transaction.
+     *
+     * @return a String representing the transaction category.
+     */
+    public String getCategory() {
+        return category;
+    }
+
+
+    /**
+     * Retrieves the monetary amount of this transaction.
+     *
+     * @return a double value representing the transaction amount.
+     */
+    public double getAmount() {
+        return amount;
+    }
+
+
+    /**
+     * Retrieves the date on which this transaction occurred.
+     *
+     * @return a Date object representing the transaction date.
+     */
+    public Date getDate() {
+        return date;
+    }
+
+
+    /**
+     * Retrieves the description or note associated with this transaction.
+     *
+     * @return a String containing the transaction description.
+     */
+    public String getDescription() {
+        return description;
+    }
+
+
+    /**
+     * Creates and returns a formatted string representation of the transaction.
+     * The format includes the date (formatted as "yyyy-MM-dd"), transaction type,
+     * category, amount (displayed with two decimal places), and description.
+     *
+     * @return a formatted string with all details of the transaction.
+     */
+    @Override
+    public String toString() {
+        // Create an instance of SimpleDateFormat to format the date.
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        // Build and return the formatted string using String.format.
+        return String.format("[%s] %s | %s: $%.2f | %s",
+                dateFormat.format(date),  // Format the date.
+                type,                     // Transaction type ("Income" or "Expense").
+                category,                 // Transaction category.
+                amount,                   // Transaction amount (formatted to 2 decimal places).
+                description);             // Transaction description.
+    }
 }
 
 
 /**
-* Manages financial transactions and provides methods to add, filter, and analyze them.
-*/
+ * The FinanceManager class is responsible for managing a collection of financial transactions.
+ * It provides methods to add, filter, update, and analyze transactions, functioning as a simple
+ * financial ledger or budget tracker.
+ */
 class FinanceManager {
-   private List<Transaction> transactions = new ArrayList<>(); // List to store all transactions
+    // A list to store all Transaction objects. This list acts as an in-memory database.
+    private List<Transaction> transactions = new ArrayList<>();
 
 
-   /**
-    * Adds a new transaction to the list.
-    *
-    * @param type        The type of transaction ("Income" or "Expense").
-    * @param category    The category of the transaction.
-    * @param amount      The amount of money involved in the transaction.
-    * @param date        The date of the transaction.
-    * @param description A description of the transaction.
-    */
-   public void addTransaction(String type, String category, double amount, Date date, String description) {
-       transactions.add(new Transaction(type, category, amount, date, description));
-   }
+    /**
+     * Adds a new transaction to the ledger.
+     *
+     * @param type        The type of transaction ("Income" or "Expense").
+     * @param category    The category under which the transaction falls.
+     * @param amount      The monetary amount involved in the transaction.
+     * @param date        The date on which the transaction occurred.
+     * @param description A brief description or note regarding the transaction.
+     */
+    public void addTransaction(String type, String category, double amount, Date date, String description) {
+        // Create a new Transaction instance with the provided details and add it to the list.
+        transactions.add(new Transaction(type, category, amount, date, description));
+    }
 
 
-   /**
-    * Calculates and returns the net balance of all transactions.
-    *
-    * @return The net balance (Income - Expenses).
-    */
-   public double getBalance() {
-       double balance = 0;
-       for (Transaction t : transactions) {
-           if (t.getType().equals("Income")) {
-               balance += t.getAmount(); // Add income amounts
-           } else {
-               balance -= t.getAmount(); // Subtract expense amounts
-           }
-       }
-       return balance;
-   }
+    /**
+     * Calculates the net balance from all transactions. The net balance is defined as the total income
+     * minus the total expenses.
+     *
+     * @return a double value representing the net balance.
+     */
+    public double getBalance() {
+        double balance = 0;
+        // Iterate over each transaction in the list.
+        for (Transaction t : transactions) {
+            // For "Income" transactions, add the amount; for "Expense" transactions, subtract the amount.
+            if (t.getType().equals("Income")) {
+                balance += t.getAmount();
+            } else {
+                balance -= t.getAmount();
+            }
+        }
+        return balance;
+    }
 
 
-   /**
-    * Returns a list of all transactions.
-    *
-    * @return The list of transactions.
-    */
-   public List<Transaction> getTransactions() {
-       return transactions;
-   }
+    /**
+     * Retrieves the complete list of transactions.
+     *
+     * @return a List containing all Transaction objects.
+     */
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
 
 
-   /**
-    * Filters transactions based on specified criteria.
-    *
-    * @param startDate Start date of the filtering period (inclusive).
-    * @param endDate   End date of the filtering period (inclusive).
-    * @param type      Type of transaction to filter ("Income" or "Expense").
-    * @param category  Category of the transaction to filter.
-    * @return A list of transactions matching the filter criteria.
-    */
-   public List<Transaction> filterTransactions(Date startDate, Date endDate, String type, String category) {
-       List<Transaction> filtered = new ArrayList<>();
-       for (Transaction t : transactions) {
-           if ((type == null || t.getType().equals(type)) &&
-                   (category == null || t.getCategory().equals(category)) &&
-                   (startDate == null || !t.getDate().before(startDate)) &&
-                   (endDate == null || !t.getDate().after(endDate))) {
-               filtered.add(t); // Add transactions that match all criteria
-           }
-       }
-       return filtered;
-   }
+    /**
+     * Filters the transactions based on the provided criteria: date range, transaction type, and category.
+     * If any of the parameters (startDate, endDate, type, or category) are null, that particular filter
+     * is ignored.
+     *
+     * @param startDate the beginning of the date range (inclusive); use null to ignore this filter.
+     * @param endDate   the end of the date range (inclusive); use null to ignore this filter.
+     * @param type      the type of transaction to filter by ("Income" or "Expense"); use null to ignore.
+     * @param category  the category to filter by; use null to ignore.
+     * @return a List of Transaction objects that match all specified filter criteria.
+     */
+    public List<Transaction> filterTransactions(Date startDate, Date endDate, String type, String category) {
+        List<Transaction> filtered = new ArrayList<>();
+        // Loop through every transaction to check if it meets the filter criteria.
+        for (Transaction t : transactions) {
+            // Check that each non-null filter matches the transaction.
+            if ((type == null || t.getType().equals(type)) &&
+                    (category == null || t.getCategory().equals(category)) &&
+                    (startDate == null || !t.getDate().before(startDate)) && // Transaction date is not before startDate.
+                    (endDate == null || !t.getDate().after(endDate))) {       // Transaction date is not after endDate.
+                filtered.add(t); // Add transaction to the filtered list if all conditions are satisfied.
+            }
+        }
+        return filtered;
+    }
 
 
-   /**
-    * Deletes a transaction from the list based on its index.
-    *
-    * @param index The 1-based index of the transaction to delete.
-    */
-   public void deleteTransaction(int index) {
-       if (index >= 1 && index <= transactions.size()) {
-           transactions.remove(index - 1); // Remove transaction (adjusted for 0-based index)
-       } else {
-           System.out.println("Invalid transaction index."); // Print error message if index is invalid
-       }
-   }
+    /**
+     * Deletes a transaction from the ledger based on its position in the list.
+     * The index provided is 1-based (i.e., the first transaction is at index 1).
+     *
+     * @param index the 1-based index of the transaction to delete.
+     */
+    public void deleteTransaction(int index) {
+        // Verify that the index is within the valid range.
+        if (index >= 1 && index <= transactions.size()) {
+            // Remove the transaction by adjusting for 0-based indexing.
+            transactions.remove(index - 1);
+        } else {
+            // Output an error message if the index is invalid.
+            System.out.println("Invalid transaction index.");
+        }
+    }
 
 
-   /**
-    * Prints a summary of income, expenses, and net balance for a given date range.
-    *
-    * @param startDate Start date of the summary period (inclusive).
-    * @param endDate   End date of the summary period (inclusive).
-    */
-   public void printSummary(Date startDate, Date endDate) {
-       double income = 0, expenses = 0;
-       for (Transaction t : filterTransactions(startDate, endDate, null, null)) {
-           if (t.getType().equals("Income")) {
-               income += t.getAmount(); // Sum income transactions
-           } else {
-               expenses += t.getAmount(); // Sum expense transactions
-           }
-       }
-       System.out.printf("Income: $%.2f | Expenses: $%.2f | Net: $%.2f%n", income, expenses, income - expenses);
-   }
+    /**
+     * Updates an existing transaction with a new Transaction object at the specified index.
+     * The index is provided as 1-based.
+     *
+     * @param index          the 1-based index of the transaction to update.
+     * @param newTransaction the new Transaction object that will replace the existing one.
+     */
+    public void updateTransaction(int index, Transaction newTransaction) {
+        // Check that the provided index is within the valid bounds of the list.
+        if (index >= 1 && index <= transactions.size()) {
+            // Replace the transaction at the given position (adjusting for 0-based indexing).
+            transactions.set(index - 1, newTransaction);
+        } else {
+            // Print an error message if the index is out of range.
+            System.out.println("Invalid transaction index.");
+        }
+    }
 
 
-   /**
-    * Prints spending totals grouped by category for a given date range.
-    *
-    * @param startDate Start date of the period (inclusive).
-    * @param endDate   End date of the period (inclusive).
-    */
-   public void printSpendingByCategory(Date startDate, Date endDate) {
-       Map<String, Double> categoryTotals = new HashMap<>();
-       for (Transaction t : filterTransactions(startDate, endDate, "Expense", null)) {
-           categoryTotals.put(t.getCategory(),
-                   categoryTotals.getOrDefault(t.getCategory(), 0.0) + t.getAmount()); // Sum amounts by category
-       }
-       for (Map.Entry<String, Double> entry : categoryTotals.entrySet()) {
-           System.out.printf("%s: $%.2f%n", entry.getKey(), entry.getValue()); // Print category totals
-       }
-   }
+    /**
+     * Prints a financial summary for transactions within a specified date range.
+     * The summary includes the total income, total expenses, and the net balance
+     * (calculated as income minus expenses).
+     *
+     * @param startDate the beginning of the period (inclusive) for which to generate the summary.
+     * @param endDate   the end of the period (inclusive) for which to generate the summary.
+     */
+    public void printSummary(Date startDate, Date endDate) {
+        double income = 0, expenses = 0;
+        // Obtain all transactions within the specified date range.
+        for (Transaction t : filterTransactions(startDate, endDate, null, null)) {
+            // Sum the amounts separately for income and expenses.
+            if (t.getType().equals("Income")) {
+                income += t.getAmount();
+            } else {
+                expenses += t.getAmount();
+            }
+        }
+        // Print the summary with proper formatting.
+        System.out.printf("Income: $%.2f | Expenses: $%.2f | Net: $%.2f%n", income, expenses, income - expenses);
+    }
+
+
+    /**
+     * Aggregates and prints the total spending grouped by category for expense transactions
+     * within a given date range.
+     *
+     * @param startDate the beginning of the period (inclusive) for which to calculate spending.
+     * @param endDate   the end of the period (inclusive) for which to calculate spending.
+     */
+    public void printSpendingByCategory(Date startDate, Date endDate) {
+        // Create a map to accumulate the total amount spent in each category.
+        Map<String, Double> categoryTotals = new HashMap<>();
+        // Iterate over all expense transactions within the date range.
+        for (Transaction t : filterTransactions(startDate, endDate, "Expense", null)) {
+            // Update the running total for the category.
+            categoryTotals.put(t.getCategory(), categoryTotals.getOrDefault(t.getCategory(), 0.0) + t.getAmount());
+        }
+        // Loop through the map and print each category with its total expenses.
+        for (Map.Entry<String, Double> entry : categoryTotals.entrySet()) {
+            System.out.printf("%s: $%.2f%n", entry.getKey(), entry.getValue());
+        }
+    }
 }
-
